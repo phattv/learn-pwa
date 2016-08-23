@@ -178,27 +178,6 @@
     });
   };
 
-  // Save list of cities to localStorage
-  app.saveSelectedCities = function () {
-    var selectedCities = JSON.stringify(app.selectedCities);
-    localStorage.selectedCities = selectedCities;
-  };
-
-  // Get user's selected cities from localStorage, else set initialWeatherForecast as selected
-  app.selectedCities = localStorage.selectedCities;
-  if (app.selectedCities) {
-    app.selectedCities = JSON.parse(app.selectedCities);
-    app.selectedCities.forEach(function (city) {
-      app.getForecast(city.key, city.label);
-    });
-  } else {
-    app.updateForecastCard(initialWeatherForecast);
-    app.selectedCities = [
-      {key: initialWeatherForecast.key, label: initialWeatherForecast.label}
-    ];
-    app.saveSelectedCities();
-  }
-
   var fakeForecast = {
     key: 'newyork',
     label: 'New York, NY',
@@ -228,9 +207,32 @@
   // Uncomment the line below to test the app with fake data
   // app.updateForecastCard(fakeForecast);
 
-  // Add code to save the users list of subscribed cities here
+  // Save list of cities to localStorage
+  app.saveSelectedCities = function () {
+    var selectedCities = JSON.stringify(app.selectedCities);
+    localStorage.selectedCities = selectedCities;
+  };
 
-  // Add code to check if the user has any subscribed cities, and render
-  // those or the default data here.
+  // Get user's selected cities from localStorage, else set initialWeatherForecast as selected
+  app.selectedCities = localStorage.selectedCities;
+  if (app.selectedCities) {
+    app.selectedCities = JSON.parse(app.selectedCities);
+    app.selectedCities.forEach(function (city) {
+      app.getForecast(city.key, city.label);
+    });
+  } else {
+    app.updateForecastCard(initialWeatherForecast);
+    app.selectedCities = [
+      {key: initialWeatherForecast.key, label: initialWeatherForecast.label}
+    ];
+    app.saveSelectedCities();
+  }
 
+  if('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('/service-worker.js')
+      .then(function() {
+        console.log('Service Worker Registered');
+      })
+  }
 })();
