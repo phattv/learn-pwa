@@ -66,7 +66,7 @@
     var label = selected.textContent;
     app.getForecast(key, label);
     app.selectedCities.push({key: key, label: label});
-    // Remember to save user preferences here
+    app.saveSelectedCities();
     app.toggleAddDialog(false);
   });
 
@@ -177,6 +177,27 @@
       app.getForecast(key);
     });
   };
+
+  // Save list of cities to localStorage
+  app.saveSelectedCities = function () {
+    var selectedCities = JSON.stringify(app.selectedCities);
+    localStorage.selectedCities = selectedCities;
+  };
+
+  // Get user's selected cities from localStorage, else set initialWeatherForecast as selected
+  app.selectedCities = localStorage.selectedCities;
+  if (app.selectedCities) {
+    app.selectedCities = JSON.parse(app.selectedCities);
+    app.selectedCities.forEach(function (city) {
+      app.getForecast(city.key, city.label);
+    });
+  } else {
+    app.updateForecastCard(initialWeatherForecast);
+    app.selectedCities = [
+      {key: initialWeatherForecast.key, label: initialWeatherForecast.label}
+    ];
+    app.saveSelectedCities();
+  }
 
   var fakeForecast = {
     key: 'newyork',
