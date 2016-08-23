@@ -1,4 +1,4 @@
-var cacheName = 'weatherPWA-step-5-1';
+var cacheName = 'weatherPWA-step-5-1'; // for versioning
 var filesToCache = [];
 
 /*
@@ -9,9 +9,24 @@ var filesToCache = [];
 self.addEventListener('install', function (event) {
   console.log('[ServiceWorker] Install');
   event.waitUntil(
-    caches.open(cacheName).then(function (cache) {
+    caches.open(cacheName).then(function (cache) { // be sure to bump cacheName in service worker changes
       console.log('[ServiceWorker] Caching app shell');
       return cache.addAll(filesToCache)
     })
   )
 });
+
+// Get all cacheKeys and delete unused ones
+self.addEventListener('activate', function (event) {
+  console.log('[ServiceWorker] Activate');
+  event.waitUntil(
+    caches.keys().then(function (keyList) {
+      return Promise.all(keyList.map(function (key) {
+        console.log('[ServiceWorker] Removing old cache', key);
+        if (key !== cacheName) {
+          return caches.delete(key);
+        }
+      }))
+    })
+  )
+})
